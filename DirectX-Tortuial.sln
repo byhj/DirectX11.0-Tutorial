@@ -11,6 +11,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch3-DirectX-Init", "ch3-Dir
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch4-DirectX-Window", "ch4-DirectX-Window\ch4-DirectX-Window.vcxproj", "{4FC0800D-E77D-4BC1-95C7-6208FFC7BF21}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch5-FullWindow", "ch5-FullWindow\ch5-FullWindow.vcxproj", "{DE1BB80C-3A0E-4406-A830-9BB9936ADDC8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ch6-Triangle", "ch6-Triangle\ch6-Triangle.vcxproj", "{81C19CB0-3751-4160-AF18-3C13AFAE2E52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -37,6 +41,14 @@ Global
 		{4FC0800D-E77D-4BC1-95C7-6208FFC7BF21}.Debug|Win32.Build.0 = Debug|Win32
 		{4FC0800D-E77D-4BC1-95C7-6208FFC7BF21}.Release|Win32.ActiveCfg = Release|Win32
 		{4FC0800D-E77D-4BC1-95C7-6208FFC7BF21}.Release|Win32.Build.0 = Release|Win32
+		{DE1BB80C-3A0E-4406-A830-9BB9936ADDC8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DE1BB80C-3A0E-4406-A830-9BB9936ADDC8}.Debug|Win32.Build.0 = Debug|Win32
+		{DE1BB80C-3A0E-4406-A830-9BB9936ADDC8}.Release|Win32.ActiveCfg = Release|Win32
+		{DE1BB80C-3A0E-4406-A830-9BB9936ADDC8}.Release|Win32.Build.0 = Release|Win32
+		{81C19CB0-3751-4160-AF18-3C13AFAE2E52}.Debug|Win32.ActiveCfg = Debug|Win32
+		{81C19CB0-3751-4160-AF18-3C13AFAE2E52}.Debug|Win32.Build.0 = Debug|Win32
+		{81C19CB0-3751-4160-AF18-3C13AFAE2E52}.Release|Win32.ActiveCfg = Release|Win32
+		{81C19CB0-3751-4160-AF18-3C13AFAE2E52}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

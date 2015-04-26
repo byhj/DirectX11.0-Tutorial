@@ -12,9 +12,11 @@
 IDXGISwapChain *pSwapChain = NULL;
 ID3D11Device *pDevice = NULL;
 ID3D11DeviceContext *pDeviceContext = NULL;
+ID3D11RenderTargetView *backBuffer = NULL;
 
 void Init(HWND hWnd);
 void Clean(void);
+void Render();
 
 //window callback function
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -22,7 +24,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 //Entry point
 int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 					_In_ LPWSTR lpCmdLine, _In_ int nShowCmd )
-{
+	{
 	//handle for the window
 	HWND hWnd;
 
@@ -34,7 +36,7 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	wc.lpfnWndProc = WinProc;
 	wc.hInstance = hInstance;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	//wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	wc.lpszClassName = L"WindowClass";
 	RegisterClassEx(&wc);
 
@@ -75,16 +77,16 @@ int WINAPI wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 			}
 		else 
 			{
-			//running game
+			Render();
 			}
 		}
 	Clean();
 	return msg.wParam;
-}
+	}
 
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
+	{
 	switch (message)
 		{
 		case WM_DESTROY:
@@ -97,39 +99,71 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	//handle any messages the switch statement didn't
 	return DefWindowProc(hWnd, message, wParam, lParam);
-}
+	}
 
 void Init(HWND hWnd)
 {
-   DXGI_SWAP_CHAIN_DESC scd;
-   ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
+	DXGI_SWAP_CHAIN_DESC scd;
+	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-   //Fill the swap chain description struct
-   scd.BufferCount = 1;                                //one back buffer
-   scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //use 32 bit color
-   scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;  
-   scd.OutputWindow = hWnd;         //Window to render
-   scd.SampleDesc.Count = 4;       // MSAA
-   scd.Windowed = TRUE;            //Full window
+	//Fill the swap chain description struct
+	scd.BufferCount = 1;                                //one back buffer
+	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  //notice the format !use 32 bit color
+	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;  
+	scd.BufferDesc.Width = 800;
+	scd.BufferDesc.Height = 600;
+	scd.OutputWindow = hWnd;         //Window to render
+	scd.SampleDesc.Count = 1;       // MSAA
+	scd.SampleDesc.Quality = 0;
+	scd.Windowed = TRUE;            //Full window
+	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;     // allow full-screen switching
+	
+	//create a device, device context and swap chain 
+	D3D11CreateDeviceAndSwapChain(NULL,
+		D3D_DRIVER_TYPE_HARDWARE,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		D3D11_SDK_VERSION,
+		&scd,
+		&pSwapChain,
+		&pDevice,
+		NULL,
+		&pDeviceContext
+		);
 
-   //create a device, device context and swap chain 
-   D3D11CreateDeviceAndSwapChain(NULL,
-	                             D3D_DRIVER_TYPE_HARDWARE,
-								 NULL,
-								 NULL,
-								 NULL,
-								 NULL,
-								 D3D11_SDK_VERSION,
-								 &scd,
-								 &pSwapChain,
-								 &pDevice,
-								 NULL,
-								 &pDeviceContext
-								 );
+	//get the address of the back buffer
+	ID3D11Texture2D *pBackBuffer = NULL;
+	//pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+
+	//use the back buffer address to create the render target
+	pDevice->CreateRenderTargetView(pBackBuffer, NULL, &backBuffer);
+	pBackBuffer->Release();
+	pDeviceContext->OMSetRenderTargets(1, &backBuffer, NULL);
+
+	//set the viewport
+	D3D11_VIEWPORT vp;
+	ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	vp.Width = 800;
+	vp.Height = 600;
+
+	pDeviceContext->RSSetViewports(1, &vp);
 }
+
+void Render(void)
+{
+	pDeviceContext->ClearRenderTargetView(backBuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
+	pSwapChain->Present(0, 0);
+}
+
 void Clean(void)
 {
-   pSwapChain->Release();
-   pDevice->Release();
-   pDeviceContext->Release();
+    pSwapChain->SetFullscreenState(FALSE, NULL);    // switch to windowed mode
+	pSwapChain->Release();
+	pDevice->Release();
+	pDeviceContext->Release();
 }
